@@ -18,8 +18,20 @@ export interface ExamQuestion {
   questionContent: string;
   media?: ExamMedia | ExamMedia[];
   options?: string[]; // For multiple choice, true/false, word ordering
-  correctAnswer: string | string[]; // Can be an array of correct ordered words or a single string
+
+
+  
+ // ✅ NEW
+  leftItems?: string[];
+  rightItems?: string[];
+
+  correctAnswer: string | string[] | Record<string, string>;
+
   explanation: string;
+
+  // correctAnswer: string | string[]; // Can be an array of correct ordered words or a single string
+  // explanation: string;
+  
 }
 
 export interface ExamData {

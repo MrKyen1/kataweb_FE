@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "antd";
 import { ExamQuestion } from "../types";
-
+import { MatchingQuestion } from "./MatchingQuestion";
 interface QuestionCardProps {
   question: ExamQuestion;
-  currentAnswer?: string | string[];
-  onAnswerChange: (answer: string | string[]) => void;
+  currentAnswer?: string | string[] | Record<string, string>;
+  onAnswerChange: (answer: string | string[] | Record<string, string>) => void;
   onSubmit: () => void;
   isCorrect?: boolean;
   showFeedback: boolean;
@@ -207,6 +207,24 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               })}
             </div>
           </div>
+        );
+
+      case "matching":
+        const matchingValue =
+          currentAnswer &&
+          typeof currentAnswer === "object" &&
+          !Array.isArray(currentAnswer)
+            ? currentAnswer
+            : {};
+
+        return (
+          <MatchingQuestion
+            question={question}
+            value={matchingValue}
+            onChange={(val) => onAnswerChange(val as any)} // 👈 cast ở đây OK
+            showFeedback={showFeedback}
+            correctAnswer={question.correctAnswer as Record<string, string>}
+          />
         );
 
       default:

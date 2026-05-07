@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Card,
   Row,
@@ -13,7 +13,10 @@ import {
   message,
   Tag,
   Empty,
-} from 'antd';
+  DatePicker,
+  Select,
+  Divider,
+} from "antd";
 import {
   UserAddOutlined,
   DeleteOutlined,
@@ -21,9 +24,16 @@ import {
   UserOutlined,
   BookOutlined,
   TeamOutlined,
-} from '@ant-design/icons';
-import { getStudents, addStudent, updateStudent, deleteStudent } from '../utils/adminStorage';
-import { Student } from '../types';
+} from "@ant-design/icons";
+import {
+  getStudents,
+  addStudent,
+  updateStudent,
+  deleteStudent,
+} from "../utils/adminStorage";
+import { Student } from "../types";
+
+import dayjs from "dayjs";
 
 export default function AdminDashboard() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -47,22 +57,29 @@ export default function AdminDashboard() {
     setIsModalVisible(true);
   };
 
-  const handleEditStudent = (student: Student) => {
+  const handleEditStudent = (student: any) => {
     setEditingStudent(student);
-    form.setFieldsValue(student);
+
+    form.setFieldsValue({
+      ...student,
+      birthYear: student.birthYear ? dayjs(student.birthYear) : null,
+      startDate: student.startDate ? dayjs(student.startDate) : null,
+      endDate: student.endDate ? dayjs(student.endDate) : null,
+    });
+
     setIsModalVisible(true);
   };
 
   const handleDeleteStudent = (id: string) => {
     Modal.confirm({
-      title: 'Xác nhận xóa',
-      content: 'Bạn có chắc chắn muốn xóa học sinh này?',
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
+      title: "Xác nhận xóa",
+      content: "Bạn có chắc chắn muốn xóa học sinh này?",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
       onOk() {
         deleteStudent(id);
-        message.success('Đã xóa học sinh!');
+        message.success("Đã xóa học sinh!");
         loadStudents();
       },
     });
@@ -70,22 +87,32 @@ export default function AdminDashboard() {
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
+
     try {
+      const payload = {
+        ...values,
+
+        // convert DatePicker
+        birthYear: values.birthYear?.year(),
+        startDate: values.startDate?.format("YYYY-MM-DD"),
+        endDate: values.endDate?.format("YYYY-MM-DD"),
+      };
+
       if (editingStudent) {
-        updateStudent(editingStudent.id, values);
-        message.success('Cập nhật học sinh thành công!');
+        updateStudent(editingStudent.id, payload);
+        message.success("Cập nhật thành công!");
       } else {
         addStudent({
-          ...values,
-          createdAt: new Date().toISOString().split('T')[0],
-          status: 'active',
+          id: Date.now().toString(),
+          ...payload,
         });
-        message.success('Thêm học sinh thành công!');
+        message.success("Thêm thành công!");
       }
+
       setIsModalVisible(false);
       loadStudents();
-    } catch (error) {
-      message.error('Lỗi khi lưu học sinh!');
+    } catch (err) {
+      message.error("Có lỗi xảy ra!");
     } finally {
       setLoading(false);
     }
@@ -93,39 +120,43 @@ export default function AdminDashboard() {
 
   const columns = [
     {
-      title: 'Tên đăng nhập',
-      dataIndex: 'username',
-      key: 'username',
+      title: "Họ tên",
+      dataIndex: "fullName",
     },
     {
-      title: 'Tên đầy đủ',
-      dataIndex: 'fullName',
-      key: 'fullName',
+      title: "Năm sinh",
+      dataIndex: "birthYear",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: "SĐT",
+      dataIndex: "phone",
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => (
-        <Tag color={status === 'active' ? 'green' : 'red'}>
-          {status === 'active' ? 'Hoạt động' : 'Vô hiệu'}
-        </Tag>
-      ),
+      title: "Cơ sở",
+      dataIndex: "branch",
     },
     {
-      title: 'Ngày tạo',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      title: "Lớp",
+      dataIndex: "class",
     },
     {
-      title: 'Hành động',
-      key: 'action',
-      render: (_: any, record: Student) => (
+      title: "Bắt đầu",
+      dataIndex: "startDate",
+      render: (date: string) => (date ? date : "—"),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "endDate",
+      render: (date: string) =>
+        date ? (
+          <Tag color="red">Đã nghỉ</Tag>
+        ) : (
+          <Tag color="green">Đang học</Tag>
+        ),
+    },
+    {
+      title: "Hành động",
+      render: (_: any, record: any) => (
         <Space size="small">
           <Button
             type="primary"
@@ -158,7 +189,7 @@ export default function AdminDashboard() {
               title="Tổng số Khóa học"
               value={9}
               prefix={<BookOutlined className="text-blue-500" />}
-              valueStyle={{ color: '#1890ff' }}
+              valueStyle={{ color: "#1890ff" }}
             />
           </Card>
         </Col>
@@ -168,7 +199,7 @@ export default function AdminDashboard() {
               title="Tổng số Giáo viên"
               value={2}
               prefix={<TeamOutlined className="text-green-500" />}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: "#52c41a" }}
             />
           </Card>
         </Col>
@@ -178,7 +209,7 @@ export default function AdminDashboard() {
               title="Tổng số Học sinh"
               value={students.length}
               prefix={<UserOutlined className="text-orange-500" />}
-              valueStyle={{ color: '#faad14' }}
+              valueStyle={{ color: "#faad14" }}
             />
           </Card>
         </Col>
@@ -208,52 +239,138 @@ export default function AdminDashboard() {
         ) : (
           <Empty
             description="Chưa có học sinh nào"
-            style={{ marginTop: '20px' }}
+            style={{ marginTop: "20px" }}
           />
         )}
       </Card>
 
       {/* Modal for adding/editing student */}
+
       <Modal
-        title={editingStudent ? 'Chỉnh sửa Học sinh' : 'Thêm Học sinh mới'}
+        title={editingStudent ? "Chỉnh sửa Học sinh" : "Thêm Học sinh"}
         open={isModalVisible}
         onOk={() => form.submit()}
         onCancel={() => setIsModalVisible(false)}
         confirmLoading={loading}
-        width={500}
+        width={820} // ✅ tăng nhẹ cho cân
       >
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          autoComplete="off"
+          labelCol={{ style: { marginBottom: 4 } }} // ✅ fix label spacing
         >
-          <Form.Item
-            label="Tên đăng nhập"
-            name="username"
-            rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
-          >
-            <Input placeholder="Nhập tên đăng nhập" />
-          </Form.Item>
+          <div className="grid grid-cols-2 gap-10 items-start">
+            {/* ================= LEFT ================= */}
+            <div className="space-y-6">
+              <h3 className="text-sm font-bold uppercase text-slate-500 tracking-wide">
+                THÔNG TIN CÁ NHÂN
+              </h3>
 
-          <Form.Item
-            label="Tên đầy đủ"
-            name="fullName"
-            rules={[{ required: true, message: 'Vui lòng nhập tên đầy đủ!' }]}
-          >
-            <Input placeholder="Nhập tên đầy đủ" />
-          </Form.Item>
+              <Form.Item
+                label="Họ và tên"
+                name="fullName"
+                rules={[{ required: true, message: "Nhập tên!" }]}
+              >
+                <Input placeholder="Nguyễn Văn A" />
+              </Form.Item>
 
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-              { required: true, message: 'Vui lòng nhập email!' },
-              { type: 'email', message: 'Email không hợp lệ!' },
-            ]}
-          >
-            <Input placeholder="Nhập email" type="email" />
-          </Form.Item>
+              <Form.Item
+                label="Năm sinh"
+                name="birthYear"
+                rules={[{ required: true }]}
+              >
+                <DatePicker picker="year" style={{ width: "100%" }} />
+              </Form.Item>
+
+              <Form.Item
+                label="Số điện thoại"
+                name="phone"
+                rules={[{ required: true }]}
+              >
+                <Input placeholder="0123456789" />
+              </Form.Item>
+
+              <Form.Item
+                label="Địa chỉ"
+                name="address"
+                rules={[{ required: true }]}
+              >
+                <Input placeholder="Địa chỉ" />
+              </Form.Item>
+            </div>
+
+            {/* ================= RIGHT ================= */}
+            <div className="space-y-6">
+              <h3 className="text-sm font-bold uppercase text-slate-500 tracking-wide">
+                THÔNG TIN HỌC TẬP
+              </h3>
+
+              <Form.Item
+                label="Cơ sở học"
+                name="branch"
+                rules={[{ required: true }]}
+              >
+                <Select placeholder="Chọn cơ sở">
+                  <Select.Option value="cs1">Cơ sở 1</Select.Option>
+                  <Select.Option value="cs2">Cơ sở 2</Select.Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Lớp học"
+                rules={[{ required: true }]}
+                shouldUpdate={(prev, curr) => prev.birthYear !== curr.birthYear}
+              >
+                {({ getFieldValue }) => {
+                  const year = getFieldValue("birthYear")?.year();
+
+                  let classOptions = [];
+                  if (!year) classOptions = ["Chọn năm sinh trước"];
+                  else if (year >= 2015) classOptions = ["Kids A", "Kids B"];
+                  else if (year >= 2010) classOptions = ["Teen A", "Teen B"];
+                  else classOptions = ["Adult 1", "Adult 2"];
+
+                  return (
+                    <Form.Item
+                      name="class"
+                      rules={[{ required: true }]}
+                      noStyle
+                    >
+                      <Select placeholder="Chọn lớp">
+                        {classOptions.map((cls) => (
+                          <Select.Option key={cls} value={cls}>
+                            {cls}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  );
+                }}
+              </Form.Item>
+
+              {/* ✅ THAY divider bằng spacing */}
+              <div className="pt-5.5" />
+
+              <h3 className="text-sm font-bold uppercase text-slate-500 tracking-wide">
+                THỜI GIAN HỌC
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <Form.Item
+                  label="Bắt đầu"
+                  name="startDate"
+                  rules={[{ required: true }]}
+                >
+                  <DatePicker style={{ width: "100%" }} />
+                </Form.Item>
+
+                <Form.Item label="Kết thúc" name="endDate">
+                  <DatePicker style={{ width: "100%" }} />
+                </Form.Item>
+              </div>
+            </div>
+          </div>
         </Form>
       </Modal>
     </div>
