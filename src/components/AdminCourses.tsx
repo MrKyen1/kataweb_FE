@@ -28,6 +28,26 @@ import {
 } from '../utils/adminStorage';
 import { Course, SubCourse } from '../types';
 
+interface CourseFormValues {
+  title: string;
+  description?: string;
+  level?: string;
+  duration?: number;
+}
+
+interface SubCourseFormValues {
+  title: string;
+  description?: string;
+  order?: number;
+}
+
+interface ExamFormValues {
+  title: string;
+  description?: string;
+  timeLimit?: number;
+  passingScore?: number;
+}
+
 export default function AdminCourses() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isCourseModalVisible, setIsCourseModalVisible] = useState(false);
@@ -68,7 +88,7 @@ export default function AdminCourses() {
     loadCourses();
   };
 
-  const handleSubmitCourse = async (values: any) => {
+  const handleSubmitCourse = async (values: CourseFormValues) => {
     setLoading(true);
     try {
       if (editingCourse) {
@@ -108,7 +128,7 @@ export default function AdminCourses() {
     }
   };
 
-  const handleSubmitSubCourse = async (values: any) => {
+  const handleSubmitSubCourse = async (values: SubCourseFormValues) => {
     setLoading(true);
     try {
       const course = courses.find((c) => c.id === selectedCourseId);
@@ -139,7 +159,7 @@ export default function AdminCourses() {
     setIsExamModalVisible(true);
   };
 
-  const handleSubmitExam = async (values: any) => {
+  const handleSubmitExam = async (values: ExamFormValues) => {
     setLoading(true);
     try {
       addExamToCourse(selectedCourseId, selectedSubCourseId, {

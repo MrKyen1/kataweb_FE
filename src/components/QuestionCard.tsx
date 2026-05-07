@@ -221,7 +221,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <MatchingQuestion
             question={question}
             value={matchingValue}
-            onChange={(val) => onAnswerChange(val as any)} // 👈 cast ở đây OK
+            onChange={(val) => onAnswerChange(val)}
             showFeedback={showFeedback}
             correctAnswer={question.correctAnswer as Record<string, string>}
           />

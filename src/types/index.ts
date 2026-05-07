@@ -43,7 +43,7 @@ export interface ExamData {
 
 export interface ExamState {
   currentQuestionIndex: number;
-  userAnswers: Record<string, string | string[]>;
+  userAnswers: Record<string, string | string[] | Record<string, string>>;
   isFinished: boolean;
   timeRemaining: number;
   showFeedback: boolean;
@@ -53,11 +53,23 @@ export interface ExamState {
 
 export interface Student {
   id: string;
-  username: string;
-  email: string;
+  username?: string;
+  email?: string;
   fullName: string;
-  createdAt: string;
+  createdAt?: string;
   status: 'active' | 'inactive';
+  birthYear?: number;
+  phone?: string;
+  address?: string;
+  branch?: string;
+  class?: string;
+  startDate?: string;
+  endDate?: string;
+  // Removed progress field as requested
+  // New ranking fields
+  totalTimeSpent?: number; // in minutes
+  correctAnswers?: number;
+  totalExams?: number;
 }
 
 export interface Teacher {

@@ -13,8 +13,8 @@ interface AuthContextType {
 }
 
 const credentials: Record<string, { password: string; role: User['role'] }> = {
-  admin: { password: '1', role: 'admin' },
-  kien: { password: '1', role: 'student' },
+  admin: { password: import.meta.env.VITE_ADMIN_PASSWORD || '1', role: 'admin' },
+  kien: { password: import.meta.env.VITE_STUDENT_PASSWORD || '1', role: 'student' },
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

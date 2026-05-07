@@ -28,6 +28,15 @@ import {
 } from '../utils/adminStorage';
 import { Teacher } from '../types';
 
+interface TeacherFormValues {
+  name: string;
+  email?: string;
+  phone?: string;
+  subject?: string;
+  experience?: number;
+  bio?: string;
+}
+
 export default function AdminTeachers() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -62,7 +71,7 @@ export default function AdminTeachers() {
     loadTeachers();
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: TeacherFormValues) => {
     setLoading(true);
     try {
       if (editingTeacher) {

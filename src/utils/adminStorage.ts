@@ -11,7 +11,64 @@ const STORAGE_KEYS = {
 /* ===================== STUDENTS ===================== */
 export const getStudents = (): Student[] => {
   const stored = localStorage.getItem(STORAGE_KEYS.STUDENTS);
-  return stored ? JSON.parse(stored) : [];
+  if (stored) {
+    return JSON.parse(stored);
+  }
+
+  return [
+    {
+      id: 'student_1',
+      username: 'kien',
+      fullName: 'Kiến Văn',
+      status: 'active',
+      birthYear: 2010,
+      phone: '0123456789',
+      address: 'Hà Nội',
+      branch: 'cs1',
+      class: 'Teen A',
+      startDate: '2024-01-10',
+      progress: 78,
+    },
+    {
+      id: 'student_2',
+      username: 'ngoc',
+      fullName: 'Ngọc Lan',
+      status: 'active',
+      birthYear: 2011,
+      phone: '0987654321',
+      address: 'Hồ Chí Minh',
+      branch: 'cs2',
+      class: 'Teen A',
+      startDate: '2024-03-06',
+      progress: 88,
+    },
+    {
+      id: 'student_3',
+      username: 'anh',
+      fullName: 'Anh Tuấn',
+      status: 'active',
+      birthYear: 2008,
+      phone: '0912345678',
+      address: 'Đà Nẵng',
+      branch: 'cs1',
+      class: 'Teen B',
+      startDate: '2024-02-15',
+      progress: 92,
+    },
+    {
+      id: 'student_4',
+      username: 'mai',
+      fullName: 'Thu Mai',
+      status: 'active',
+      birthYear: 2012,
+      phone: '0909123456',
+      address: 'Cần Thơ',
+      branch: 'cs2',
+      class: 'Teen A',
+      startDate: '2024-04-01',
+      progress: 65,
+    },
+  ];
 };
 
 export const saveStudents = (students: Student[]): void => {

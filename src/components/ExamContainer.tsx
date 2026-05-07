@@ -20,8 +20,10 @@ export const ExamContainer: React.FC<ExamContainerProps> = ({
   const navigate = useNavigate();
   const { courseId } = useParams();
   const [currentIndex, setCurrentIndex] = useState(0);
+  type AnswerValue = string | string[] | Record<string, string>;
+
   const [userAnswers, setUserAnswers] = useState<
-    Record<string, string | string[]>
+    Record<string, AnswerValue>
   >({});
   const [questionResults, setQuestionResults] = useState<
     Record<string, "correct" | "wrong">
@@ -81,22 +83,45 @@ export const ExamContainer: React.FC<ExamContainerProps> = ({
     }
   }, [currentQuestion.id, questionResults]);
 
-  const handleAnswerChange = (answer: string | string[]) => {
+  const handleAnswerChange = (answer: AnswerValue) => {
     setUserAnswers((prev) => ({
       ...prev,
       [currentQuestion.id]: answer,
     }));
   };
 
-  const checkCorrectness = (
-    answer: string | string[],
-    correct: string | string[],
+  const areObjectAnswersEqual = (
+    answer: Record<string, string>,
+    correct: Record<string, string>,
   ) => {
+    const answerKeys = Object.keys(answer);
+    const correctKeys = Object.keys(correct);
+    if (answerKeys.length !== correctKeys.length) return false;
+
+    return answerKeys.every((key) => {
+      const normalizedAnswer = answer[key]?.trim().toLowerCase() ?? "";
+      const normalizedCorrect = correct[key]?.trim().toLowerCase() ?? "";
+      return normalizedAnswer === normalizedCorrect;
+    });
+  };
+
+  const checkCorrectness = (
+    answer: AnswerValue,
+    correct: string | string[] | Record<string, string>,
+  ) => {
+    if (
+      typeof answer === "object" &&
+      !Array.isArray(answer) &&
+      typeof correct === "object" &&
+      !Array.isArray(correct)
+    ) {
+      return areObjectAnswersEqual(answer, correct);
+    }
+
     if (Array.isArray(answer) && Array.isArray(correct)) {
       return JSON.stringify(answer) === JSON.stringify(correct);
     }
 
-    // Normalize string answers for comparison
     const normAnswer =
       typeof answer === "string" ? answer.trim().toLowerCase() : answer;
     const normCorrect =
@@ -125,6 +150,13 @@ export const ExamContainer: React.FC<ExamContainerProps> = ({
     }
   };
 
+  const isAnswerProvided = (answer: AnswerValue | undefined) => {
+    if (answer === undefined || answer === null) return false;
+    if (Array.isArray(answer)) return answer.length > 0;
+    if (typeof answer === "object") return Object.keys(answer).length > 0;
+    return String(answer).trim().length > 0;
+  };
+
   const handleFinish = () => {
     const updatedResults: Record<string, "correct" | "wrong"> = {};
     let score = 0;
@@ -132,12 +164,12 @@ export const ExamContainer: React.FC<ExamContainerProps> = ({
     examData.questions.forEach((q) => {
       const uAnswer = userAnswers[q.id];
       const isCorrectAnswer =
-        uAnswer && checkCorrectness(uAnswer, q.correctAnswer);
+        uAnswer !== undefined && checkCorrectness(uAnswer, q.correctAnswer);
 
       if (isCorrectAnswer) {
         score++;
         updatedResults[q.id] = "correct";
-      } else if (uAnswer && (!Array.isArray(uAnswer) || uAnswer.length > 0)) {
+      } else if (isAnswerProvided(uAnswer)) {
         updatedResults[q.id] = "wrong";
       }
     });
@@ -153,7 +185,7 @@ export const ExamContainer: React.FC<ExamContainerProps> = ({
     if (questionResults[question.id]) {
       return questionResults[question.id];
     }
-    if (!answer || (Array.isArray(answer) && answer.length === 0)) {
+    if (!isAnswerProvided(answer)) {
       return null;
     }
     return "selected";
@@ -167,7 +199,7 @@ export const ExamContainer: React.FC<ExamContainerProps> = ({
   ).length;
   const totalAnswered = Object.keys(userAnswers).filter((key) => {
     const answer = userAnswers[key];
-    return answer && (!Array.isArray(answer) || answer.length > 0);
+    return isAnswerProvided(answer);
   }).length;
   const totalUnanswered = totalQuestions - totalAnswered;
 

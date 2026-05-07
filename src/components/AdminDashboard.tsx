@@ -7,6 +7,7 @@ import {
   Button,
   Form,
   Input,
+  InputNumber,
   Modal,
   Table,
   Space,
@@ -33,6 +34,19 @@ import {
 } from "../utils/adminStorage";
 import { Student } from "../types";
 
+interface StudentFormValues {
+  username: string;
+  fullName: string;
+  birthYear?: number;
+  phone?: string;
+  address?: string;
+  branch?: string;
+  class?: string;
+  startDate?: dayjs.Dayjs;
+  endDate?: dayjs.Dayjs;
+}
+import StudentRanking from "./StudentRanking";
+
 import dayjs from "dayjs";
 
 export default function AdminDashboard() {
@@ -57,7 +71,7 @@ export default function AdminDashboard() {
     setIsModalVisible(true);
   };
 
-  const handleEditStudent = (student: any) => {
+  const handleEditStudent = (student: Student) => {
     setEditingStudent(student);
 
     form.setFieldsValue({
@@ -85,7 +99,7 @@ export default function AdminDashboard() {
     });
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: StudentFormValues) => {
     setLoading(true);
 
     try {
@@ -120,8 +134,16 @@ export default function AdminDashboard() {
 
   const columns = [
     {
+      title: "Username",
+      dataIndex: "username",
+    },
+    {
       title: "Họ tên",
       dataIndex: "fullName",
+    },
+    {
+      title: "Lớp",
+      dataIndex: "class",
     },
     {
       title: "Năm sinh",
@@ -134,10 +156,6 @@ export default function AdminDashboard() {
     {
       title: "Cơ sở",
       dataIndex: "branch",
-    },
-    {
-      title: "Lớp",
-      dataIndex: "class",
     },
     {
       title: "Bắt đầu",
@@ -156,7 +174,7 @@ export default function AdminDashboard() {
     },
     {
       title: "Hành động",
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: Student) => (
         <Space size="small">
           <Button
             type="primary"
@@ -215,6 +233,15 @@ export default function AdminDashboard() {
         </Col>
       </Row>
 
+      <div className="">
+        <StudentRanking
+          students={students}
+          title="Bảng xếp hạng tháng hiện tại"
+          showFilters={true}
+          maxResults={5}
+        />
+      </div>
+
       {/* Students Management */}
       <Card
         title="Quản lý Học sinh"
@@ -266,6 +293,14 @@ export default function AdminDashboard() {
               <h3 className="text-sm font-bold uppercase text-slate-500 tracking-wide">
                 THÔNG TIN CÁ NHÂN
               </h3>
+
+              <Form.Item
+                label="Username"
+                name="username"
+                rules={[{ required: true, message: "Nhập username!" }]}
+              >
+                <Input placeholder="kien" />
+              </Form.Item>
 
               <Form.Item
                 label="Họ và tên"
