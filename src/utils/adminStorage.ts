@@ -19,7 +19,7 @@ export const getStudents = (): Student[] => {
     {
       id: 'student_1',
       username: 'kien',
-      fullName: 'Kiến Văn',
+      fullName: 'Đăng Kiên',
       status: 'active',
       birthYear: 2010,
       phone: '0123456789',
@@ -32,7 +32,7 @@ export const getStudents = (): Student[] => {
     {
       id: 'student_2',
       username: 'ngoc',
-      fullName: 'Ngọc Lan',
+      fullName: 'Ngọc',
       status: 'active',
       birthYear: 2011,
       phone: '0987654321',

@@ -1,5 +1,15 @@
 import React, { useMemo, useState } from "react";
-import { Card, Table, Tag, Select, Row, Col, Statistic, Avatar, Badge } from "antd";
+import {
+  Card,
+  Table,
+  Tag,
+  Select,
+  Row,
+  Col,
+  Statistic,
+  Avatar,
+  Badge,
+} from "antd";
 import { TrophyOutlined, CrownOutlined, StarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { Student } from "../types";
@@ -105,18 +115,24 @@ export default function StudentRanking({
   const effectiveStudents = students.length > 0 ? students : sampleStudents;
 
   // Get unique classes and branches for filters
-  const availableClasses = [...new Set(effectiveStudents.map(s => s.class).filter(Boolean))];
-  const availableBranches = [...new Set(effectiveStudents.map(s => s.branch).filter(Boolean))];
+  const availableClasses = [
+    ...new Set(effectiveStudents.map((s) => s.class).filter(Boolean)),
+  ];
+  const availableBranches = [
+    ...new Set(effectiveStudents.map((s) => s.branch).filter(Boolean)),
+  ];
 
   const filteredStudents = useMemo(() => {
     let filtered = effectiveStudents;
 
     if (selectedClass) {
-      filtered = filtered.filter(student => student.class === selectedClass);
+      filtered = filtered.filter((student) => student.class === selectedClass);
     }
 
     if (selectedBranch) {
-      filtered = filtered.filter(student => student.branch === selectedBranch);
+      filtered = filtered.filter(
+        (student) => student.branch === selectedBranch,
+      );
     }
 
     return filtered
@@ -161,7 +177,9 @@ export default function StudentRanking({
       case 3:
         return <StarOutlined className="text-amber-600 text-xl" />;
       default:
-        return <span className="text-lg font-bold text-slate-600">#{rank}</span>;
+        return (
+          <span className="text-lg font-bold text-slate-600">#{rank}</span>
+        );
     }
   };
 
@@ -189,16 +207,19 @@ export default function StudentRanking({
         <div className="flex items-center gap-3">
           <Avatar
             size={compact ? "small" : "default"}
-            className={`${record.key === currentStudentId ? 'ring-2 ring-blue-500' : ''}`}
+            className={`${record.key === currentStudentId ? "ring-2 ring-blue-500" : ""}`}
             style={{
-              background: record.key === currentStudentId ? '#1890ff' : '#f0f2f5',
-              color: record.key === currentStudentId ? '#fff' : '#666'
+              background:
+                record.key === currentStudentId ? "#1890ff" : "#f0f2f5",
+              color: record.key === currentStudentId ? "#fff" : "#666",
             }}
           >
             {value.charAt(0).toUpperCase()}
           </Avatar>
           <div>
-            <div className={`font-medium ${record.key === currentStudentId ? 'text-blue-600' : ''}`}>
+            <div
+              className={`font-medium ${record.key === currentStudentId ? "text-blue-600" : ""}`}
+            >
               {value}
             </div>
             {!compact && (
@@ -210,49 +231,58 @@ export default function StudentRanking({
         </div>
       ),
     },
-    ...(compact ? [] : [
-      {
-        title: "Lớp",
-        dataIndex: "class",
-        width: 80,
-        render: (value: string) => <Tag color="blue">{value}</Tag>,
-      },
-      {
-        title: "Cơ sở",
-        dataIndex: "branch",
-        width: 80,
-        render: (value: string) => (
-          <Tag color={value === "cs1" ? "green" : "purple"}>
-            {value === "cs1" ? "CS1" : value === "cs2" ? "CS2" : value}
-          </Tag>
-        ),
-      },
-    ]),
+    ...(compact
+      ? []
+      : [
+          {
+            title: "Lớp",
+            dataIndex: "class",
+            width: 80,
+            render: (value: string) => <Tag color="blue">{value}</Tag>,
+          },
+          {
+            title: "Cơ sở",
+            dataIndex: "branch",
+            width: 80,
+            render: (value: string) => (
+              <Tag color={value === "cs1" ? "green" : "purple"}>
+                {value === "cs1" ? "CS1" : value === "cs2" ? "CS2" : value}
+              </Tag>
+            ),
+          },
+        ]),
     {
       title: compact ? "KQ/Đề" : "Kết quả",
       dataIndex: "correctAnswers",
       width: compact ? 70 : 100,
       render: (value: number, record: any) => (
         <div className="text-center">
-          <div className="font-semibold">{value ?? 0}/{record.totalExams ?? 0}</div>
+          <div className="font-semibold">
+            {value ?? 0}/{record.totalExams ?? 0}
+          </div>
           {!compact && (
             <div className="text-xs text-slate-500">
-              {record.totalExams ? ((value ?? 0) / record.totalExams * 100).toFixed(0) : 0}%
+              {record.totalExams
+                ? (((value ?? 0) / record.totalExams) * 100).toFixed(0)
+                : 0}
+              %
             </div>
           )}
         </div>
       ),
     },
-    ...(compact ? [] : [
-      {
-        title: "Thời gian",
-        dataIndex: "totalTimeSpent",
-        width: 100,
-        render: (value: number) => (
-          <span className="text-sm">{value ? `${value}min` : "—"}</span>
-        ),
-      },
-    ]),
+    ...(compact
+      ? []
+      : [
+          {
+            title: "Thời gian",
+            dataIndex: "totalTimeSpent",
+            width: 100,
+            render: (value: number) => (
+              <span className="text-sm">{value ? `${value}min` : "—"}</span>
+            ),
+          },
+        ]),
     {
       title: compact ? "Điểm" : "Điểm xếp hạng",
       dataIndex: "rankingScore",
@@ -277,116 +307,24 @@ export default function StudentRanking({
     if (filteredStudents.length === 0) return null;
 
     const totalStudents = filteredStudents.length;
-    const avgCorrect = filteredStudents.reduce((sum, s) => sum + (s.correctAnswers ?? 0), 0) / totalStudents;
-    const avgExams = filteredStudents.reduce((sum, s) => sum + (s.totalExams ?? 0), 0) / totalStudents;
-    const avgTime = filteredStudents.reduce((sum, s) => sum + (s.totalTimeSpent ?? 0), 0) / totalStudents;
-    const avgScore = filteredStudents.reduce((sum, s) => sum + calculateRankingScore(s), 0) / totalStudents;
+    const avgCorrect =
+      filteredStudents.reduce((sum, s) => sum + (s.correctAnswers ?? 0), 0) /
+      totalStudents;
+    const avgExams =
+      filteredStudents.reduce((sum, s) => sum + (s.totalExams ?? 0), 0) /
+      totalStudents;
+    const avgTime =
+      filteredStudents.reduce((sum, s) => sum + (s.totalTimeSpent ?? 0), 0) /
+      totalStudents;
+    const avgScore =
+      filteredStudents.reduce((sum, s) => sum + calculateRankingScore(s), 0) /
+      totalStudents;
 
     return { avgCorrect, avgExams, avgTime, avgScore };
   }, [filteredStudents]);
 
   return (
     <div className="space-y-6">
-      {showFilters && (
-        <Card
-          size="small"
-          className="shadow-sm border-0 bg-gradient-to-r from-blue-50 to-indigo-50"
-          bodyStyle={{ padding: '16px' }}
-        >
-          <Row gutter={[16, 16]} align="middle">
-            <Col xs={24} sm={8}>
-              <div className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-600">Lọc theo lớp:</span>
-                <Select
-                  placeholder="Chọn lớp"
-                  value={selectedClass}
-                  onChange={setSelectedClass}
-                  allowClear
-                  style={{ width: '100%' }}
-                  className="rounded-lg"
-                >
-                  {availableClasses.map(cls => (
-                    <Select.Option key={cls} value={cls}>{cls}</Select.Option>
-                  ))}
-                </Select>
-              </div>
-            </Col>
-            <Col xs={24} sm={8}>
-              <div className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-600">Lọc theo cơ sở:</span>
-                <Select
-                  placeholder="Chọn cơ sở"
-                  value={selectedBranch}
-                  onChange={setSelectedBranch}
-                  allowClear
-                  style={{ width: '100%' }}
-                  className="rounded-lg"
-                >
-                  {availableBranches.map(branch => (
-                    <Select.Option key={branch} value={branch}>
-                      {branch === "cs1" ? "Cơ sở 1" : branch === "cs2" ? "Cơ sở 2" : branch}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </div>
-            </Col>
-            <Col xs={24} sm={8}>
-              <div className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-600">Thống kê:</span>
-                <div className="text-xs text-slate-500">
-                  Hiển thị top {maxResults} học viên
-                  {selectedClass && ` lớp ${selectedClass}`}
-                  {selectedBranch && ` cơ sở ${selectedBranch === "cs1" ? "1" : "2"}`}
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Card>
-      )}
-
-      {statsData && !compact && (
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={6}>
-            <Card size="small" className="text-center bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
-              <Statistic
-                title={<span className="text-blue-300">Điểm đúng TB</span>}
-                value={statsData.avgCorrect.toFixed(1)}
-                suffix={`/ đề`}
-                valueStyle={{ color: '#8fc994', fontSize: '24px' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={6}>
-            <Card size="small" className="text-center bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
-              <Statistic
-                title={<span className="text-green-300">Số đề TB</span>}
-                value={statsData.avgExams.toFixed(1)}
-                valueStyle={{ color: '#8fc994', fontSize: '24px' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={6}>
-            <Card size="small" className="text-center bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0">
-              <Statistic
-                title={<span className="text-orange-300">Thời gian TB</span>}
-                value={statsData.avgTime.toFixed(0)}
-                suffix=" phút"
-                valueStyle={{ color: '#8fc994', fontSize: '24px' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={6}>
-            <Card size="small" className="text-center bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
-              <Statistic
-                title={<span className="text-purple-300">Điểm xếp hạng TB</span>}
-                value={statsData.avgScore.toFixed(1)}
-                valueStyle={{ color: '#8fc994', fontSize: '24px' }}
-              />
-            </Card>
-          </Col>
-        </Row>
-      )}
-
       <Card
         title={
           <div className="flex items-center gap-2">
@@ -396,11 +334,80 @@ export default function StudentRanking({
         }
         className="shadow-lg border-0 bg-gradient-to-br from-white to-slate-50"
         headStyle={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          borderRadius: '12px 12px 0 0'
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          color: "white",
+          borderRadius: "12px 12px 0 0",
         }}
       >
+        {showFilters && (
+          <Card
+            size="small"
+            className="shadow-sm border-0 bg-gradient-to-r from-blue-50 to-indigo-50"
+            bodyStyle={{ padding: "16px" }}
+          >
+            <Row gutter={[16, 16]} align="middle">
+              <Col xs={24} sm={8}>
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-medium text-slate-600">
+                    Lọc theo lớp:
+                  </span>
+                  <Select
+                    placeholder="Chọn lớp"
+                    value={selectedClass}
+                    onChange={setSelectedClass}
+                    allowClear
+                    style={{ width: "100%" }}
+                    className="rounded-lg"
+                  >
+                    {availableClasses.map((cls) => (
+                      <Select.Option key={cls} value={cls}>
+                        {cls}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+              </Col>
+              <Col xs={24} sm={8}>
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-medium text-slate-600">
+                    Lọc theo cơ sở:
+                  </span>
+                  <Select
+                    placeholder="Chọn cơ sở"
+                    value={selectedBranch}
+                    onChange={setSelectedBranch}
+                    allowClear
+                    style={{ width: "100%" }}
+                    className="rounded-lg"
+                  >
+                    {availableBranches.map((branch) => (
+                      <Select.Option key={branch} value={branch}>
+                        {branch === "cs1"
+                          ? "Cơ sở 1"
+                          : branch === "cs2"
+                            ? "Cơ sở 2"
+                            : branch}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+              </Col>
+              <Col xs={24} sm={8}>
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-medium text-slate-600">
+                    Thống kê:
+                  </span>
+                  <div className="text-xs text-slate-500">
+                    Hiển thị top {maxResults} học viên
+                    {selectedClass && ` lớp ${selectedClass}`}
+                    {selectedBranch &&
+                      ` cơ sở ${selectedBranch === "cs1" ? "1" : "2"}`}
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Card>
+        )}
         <Table
           columns={columns}
           dataSource={tableData}
