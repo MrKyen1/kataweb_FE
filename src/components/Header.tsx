@@ -1,12 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Layout, Menu, Button, Dropdown } from "antd";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useAuth } from "../contexts/AuthContext";
 
 const { Header: AntHeader } = Layout;
 
-export default function Header() {
+const Header = memo(function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isLoggedIn, logout } = useAuth();
@@ -122,4 +122,6 @@ export default function Header() {
       </div>
     </AntHeader>
   );
-}
+});
+
+export default Header;

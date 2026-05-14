@@ -39,6 +39,7 @@ interface SubCourseFormValues {
   title: string;
   description?: string;
   order?: number;
+  image?: string;
 }
 
 interface ExamFormValues {
@@ -165,7 +166,7 @@ export default function AdminCourses() {
       addExamToCourse(selectedCourseId, selectedSubCourseId, {
         id: `exam_${Date.now()}`,
         title: values.title,
-        timeLimit: values.timeLimit * 60, // Convert minutes to seconds
+        timeLimit: (values.timeLimit || 0) * 60, // Convert minutes to seconds
       });
       message.success('Thêm đề thi thành công!');
       setIsExamModalVisible(false);

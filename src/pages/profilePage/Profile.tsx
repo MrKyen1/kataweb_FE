@@ -141,9 +141,9 @@ export default function Profile() {
                   <Text strong>Kết quả</Text>
                   <Progress
                     percent={
-                      currentStudent.totalExams
-                        ? (currentStudent.correctAnswers /
-                            currentStudent.totalExams) *
+                      (currentStudent.totalExams || 0) > 0
+                        ? ((currentStudent.correctAnswers || 0) /
+                            (currentStudent.totalExams || 1)) *
                           100
                         : 0
                     }

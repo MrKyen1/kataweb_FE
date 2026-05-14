@@ -3,7 +3,6 @@
 .header {
     background-color: white !important;
 }
-@custom-variant dark (&:where(.dark, .dark *));
 
 body {
   font-family: 'Inter', sans-serif;

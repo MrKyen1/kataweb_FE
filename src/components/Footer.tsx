@@ -6,11 +6,12 @@ import {
   MessageCircle,
   BookOpen,
 } from "lucide-react";
+import { memo } from "react";
 
 const { Footer: AntFooter } = Layout;
 const { Title, Text, Link } = Typography;
 
-export default function Footer() {
+const Footer = memo(function Footer() {
   return (
     <AntFooter
       className="!bg-slate-200 py-12 px-6 md:px-16 mt-auto "
@@ -84,4 +85,6 @@ export default function Footer() {
       </div>
     </AntFooter>
   );
-}
+});
+
+export default Footer;
